@@ -3,6 +3,8 @@ package app.num.barcodescannerproject;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -36,12 +38,16 @@ import com.google.zxing.Result;
 import java.util.List;
 
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity implements ZXingScannerView.ResultHandler, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     private static final int PERMISSION_ACCESS_COARSE_LOCATION = 1;
     private static final int REQUEST_CHECK_SETTINGS = 2;
     private ZXingScannerView mScannerView;
     private GoogleApiClient googleApiClient;
+    ProgressDialog progress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -179,9 +185,48 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         builder.setMessage(rawResult.getText()+Double.toString(gps[0])+Double.toString(gps[1]));
         AlertDialog alert1 = builder.create();
         alert1.show();
+        progress = new ProgressDialog(MainActivity.this);
+        progress.setTitle("enviando...");
+        progress.show();
+        retrofitSender(rawResult.getText(), gps[0], gps[1]);
 
         // If you would like to resume scanning, call this method below:
         // mScannerView.resumeCameraPreview(this);
+    }
+
+    private void retrofitSender(String gatewayws, double latitude, double longitude) {
+        RetrofitService service = ServiceGenerator.createService(RetrofitService.class);
+        final Context context = this;
+        Call<Boolean> call = service.addLocation(gatewayws, latitude, longitude);
+
+        call.enqueue(new Callback<Boolean>() {
+            @Override
+            public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+
+                if (response.isSuccessful()) {
+
+                    Toast.makeText(context, "foi", Toast.LENGTH_LONG).show();
+                    progress.dismiss();
+
+                    //verifica aqui se o corpo da resposta não é nulo
+
+                } else {
+
+                    Toast.makeText(getApplicationContext(),"Resposta não foi sucesso", Toast.LENGTH_SHORT).show();
+                    progress.dismiss();
+
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<Boolean> call, Throwable t) {
+
+                Toast.makeText(getApplicationContext(),"Erro na chamada ao servidor", Toast.LENGTH_SHORT).show();
+            }
+
+        });
+        progress.dismiss();
     }
 
     @Override

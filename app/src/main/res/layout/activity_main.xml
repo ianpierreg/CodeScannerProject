@@ -9,8 +9,20 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="app.num.barcodescannerproject.MainActivity">
 
+        <TextView
+            android:id="@+id/text_view_id"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textColor="#000"
+            android:textSize="30px"
+            android:text="Clique no botão abaixo para ler um QR Code. Ao ler o QR code, a localização do dispositivo será guardada no mesmo e enviada ao servidor" />
+
+
+
+
     <Button android:layout_height="wrap_content"
+        android:layout_marginTop="200px"
         android:layout_width="match_parent"
-        android:text="QRScanner"
+        android:text="Escaneie QR Code do Dispositivo"
         android:onClick="QrScanner" />
 </RelativeLayout>
