@@ -222,8 +222,8 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
             @Override
             public void onFailure(Call<Boolean> call, Throwable t) {
 
-                Toast.makeText(getApplicationContext(),"Erro na chamada ao servidor", Toast.LENGTH_SHORT).show();
             }
+
 
         });
         progress.dismiss();
